@@ -8,7 +8,7 @@ SetTitleMatchMode, RegEx
 
 EnvGet, COMPNAME, COMPUTERNAME
 CALCDOC 	= "https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-apps-139014e7-177b-d1f3-eb2e-7298b2599a34#bkmk_cal"
-CUBASEDOC 	= "https://steinberg.help/cubase_pro/v10/en/cubase_nuendo/topics/chord_pads/chord_pad_zone_r.html"
+CUBASEDOC 	= "https://steinberg.help/cubase_pro/v11/en/cubase_nuendo/topics/chord_pads/chord_pad_zone_r.html"
 
 ; =============================================================================
 ; SYSTEM SHORTCUTS
@@ -45,7 +45,7 @@ Return
 +^!#F5::Run, "D:\OneDrive\Accessories\Office\JopiTemplate.potx"
 #F6::Run, "D:\OneDrive\Accessories\RapidComposer\RapidComposer Template.rcCOMP"
 +#F6::Run, "D:\OneDrive\Accessories\REAPER\REAPER.bat"
-^#F6::Run, "C:\Users\jopim\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Ableton Live 11 Trial.lnk"
+; ^#F6::Run, "C:\Users\jopim\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Ableton Live 11 Trial.lnk"
 +^#F6::
     if (COMPNAME = "IAPETUS") {
         Run, %CUBASEDOC%
@@ -59,11 +59,29 @@ Return
 +^!#F6::Run, "D:\OneDrive\Accessories\REAPER\MTexturedStyleEditor\MTexturedStyleEditor.exe"
 #F7::
     if (COMPNAME = "IAPETUS") {
-        Run, "C:\Program Files (x86)\nerds.de\LoopBe1\loopBeMon.exe"
-        Run, "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\XotoPad\XotoPad.lnk"
+        Process, Exist, loopBeMon.exe
+        monitorPID := ErrorLevel
+        Process, Exist, XotoPad.exe
+        controlPID := ErrorLevel
+        if (not monitorPID) {
+            Run, "C:\Program Files (x86)\nerds.de\LoopBe1\loopBeMon.exe"
+            Run, "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\XotoPad\XotoPad.lnk"
+        } else {
+            Process, Close, %monitorPID%
+            Process, Close, %controlPID%
+        }
+    } else {
+        Process, Exist, TouchOSC Bridge.exe
+        NewPID := ErrorLevel
+        if (not NewPID) {
+            Run, "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\TouchOSC Bridge\TouchOSC Bridge.lnk"
+        } else {
+            Process, Close, %NewPID%
+        }
     }
 Return
 +!#F7::Run, "D:\OneDrive\Music\Falcon\Init.uvip"
+; !#F7::Run, "C:\Users\jopim\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\VCV Rack.lnk"
 +^#F7::Run, "C:\Users\jopim\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Postman\Postman.lnk"
 +^!#F7::Run, "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\iLok License Manager.lnk"
 #F8::Run, "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Adobe Lightroom.lnk"
@@ -150,194 +168,216 @@ Return
 
 #IfWinActive, Calculator
     F1::Run, %CALCDOC%
+Return
 
-    #IfWinActive, ahk_exe Acrobat.exe
-        !1::Send ^+{F5}		; Focus nav pane
-        !2::Send {F5}		; Focus doc
+#IfWinActive, ahk_exe Acrobat.exe
+    !1::Send ^+{F5}		; Focus nav pane
+    !2::Send {F5}		; Focus doc
+Return
 
-        #IfWinActive, .*KeePass
-            F11::Send !il		; Show by size
-            F12::Send !ixf		; Show expiring
-            #IfWinActive, Large Entries
-                F11::Send !{F4}
-                ; #IfWinActive
+#IfWinActive, .*KeePass
+    F11::Send !il		; Show by size
+    F12::Send !ixf		; Show expiring
+Return
+#IfWinActive, Large Entries
+    F11::Send !{F4}
+    ; #IfWinActive
 
-                ; #IfWinActive, ahk_exe powershell.exe
-                ; #s::Send ^{a}exit{enter}
-                #IfWinActive, .*Jopi's PowerShell.*
-                    #'::Send !{Space}n
-                    F2::
-                        Send +^4
-                        Sleep 500
-                        Send ^d
-                        Sleep 500
-                        Send rr{enter}
-                        Send +^d
-                        Sleep 500
-                        Send cal{enter}
-                        Send +!{right}
-                        Send !{left}
-                        Send up{enter}jo6r6m6a{enter}
-                    Return
-                    F1::
-                        Send ^d
-                        Sleep 500
-                        Send +^d
-                        Sleep 500
-                        Send +!{right}
-                        Send !{left}
-                    Return
-                    #IfWinActive, .*jopim@.*
-                        #'::Send !{Space}n
-                    F1::
-                        Send ^d
-                        Sleep 500
-                        Send rr{enter}
-                        Send +^d
-                        Sleep 500
-                        Send cal{enter}
-                        Send +!{right}
-                        Send !{left}
-                    Return
+    ; #IfWinActive, ahk_exe powershell.exe
+    ; #s::Send ^{a}exit{enter}
+Return
 
-                    #IfWinActive, OneNote.*
-                    !1::
-                        Send !h
-                        Send {Enter}{esc}
-                    Return
+#IfWinActive, .*Jopi's PowerShell.*
+    #'::Send !{Space}n
+F2::
+    Send +^4
+    Sleep 500
+    Send ^d
+    Sleep 500
+    Send rr{enter}
+    Send +^d
+    Sleep 500
+    Send cal{enter}
+    Send +!{right}
+    Send !{left}
+    Send up{enter}jo6r6m6a{enter}
+Return
+F1::
+    Send ^d
+    Sleep 500
+    Send +^d
+    Sleep 500
+    Send +!{right}
+    Send !{left}
+Return
+Return
+#IfWinActive, .*jopim@.*
+    #'::Send !{Space}n
+F1::
+    Send ^d
+    Sleep 500
+    Send rr{enter}
+    Send +^d
+    Sleep 500
+    Send cal{enter}
+    Send +!{right}
+    Send !{left}
+Return
+Return
 
-                    #IfWinActive, ahk_exe colorcpl.exe
-                    #F11::
-                        Send !f{down}!s{esc}
+#IfWinActive, OneNote.*
+!1::
+    Send !h
+    Send {Enter}{esc}
+Return
+Return
 
-                        #IfWinActive, ahk_exe EXCEL.EXE
-                            F1::Send {AppsKey}q
+#IfWinActive, ahk_exe colorcpl.exe
+#F11::
+    Send !f{down}!s{esc}
+Return
 
-                            #IfWinActive, ahk_exe ImageJ-win64.exe
-                                F1::Run, "D:\OneDrive - University of Eastern Finland\Fiji.app\ImageJ.pdf"
+#IfWinActive, ahk_exe EXCEL.EXE
+    F1::Send {AppsKey}q
+Return
 
-                                #IfWinActive, .*RapidComposer.*
-                                    ^q::Send ^+{Delete}
+#IfWinActive, ahk_exe ImageJ-win64.exe
+    F1::Run, "D:\OneDrive - University of Eastern Finland\Fiji.app\ImageJ.pdf"
+Return
 
-                                    #IfWinActive, ahk_exe lightroom.exe
-                                        F12::Send {SC135} 	; Forward slash (show filmstrip)
-                                        +^f::Send {SC135}
-                                        '::Send !vs{Enter}
-                                        F1::Send !vs{Enter}
+#IfWinActive, .*RapidComposer.*
+    ^q::Send ^+{Delete}
+Return
 
-                                        #IfWinActive, ahk_exe MTexturedStyleEditor.exe
-                                            F1::Run, "D:\OneDrive\Accessories\REAPER\MTexturedStyleEditor\MTexturedStyleEditor.pdf"
+#IfWinActive, ahk_exe lightroom.exe
+    F12::Send {SC135} 	; Forward slash (show filmstrip)
+    +^f::Send {SC135}
+    '::Send !vs{Enter}
+    F1::Send !vs{Enter}
+Return
 
-                                            #IfWinActive, ahk_exe Cubase10.exe
-                                                F1::Run, %CUBASEDOC%
+#IfWinActive, ahk_exe MTexturedStyleEditor.exe
+    F1::Run, "D:\OneDrive\Accessories\REAPER\MTexturedStyleEditor\MTexturedStyleEditor.pdf"
+Return
 
-                                                #IfWinActive, ahk_exe Falconx64.exe
-                                                    F1::Run, "D:\OneDrive\Accessories\REAPER Iapetus\Guide.pdf"
+#IfWinActive, ahk_exe Cubase11.exe
+    F1::Run, %CUBASEDOC%
+Return
 
-                                                    #IfWinActive, Postman
-                                                        F1::
-                                                            Send ^l
-                                                            Send ^a
-                                                            Send https://localhost:8000/ 
-                                                        Return
-                                                        F2::
-                                                            Send ^l
-                                                            Send ^a
-                                                            Send https://localhost:8080/ 
-                                                        Return
-                                                        F3::
-                                                            Send ^l
-                                                            Send ^a
-                                                            Send https://www.ampparit.com/ 
-                                                        Return
-                                                        F4::
-                                                            Send ^l
-                                                            Send ^a
-                                                            Send https://www.thurrott.com/ 
-                                                        Return
+#IfWinActive, ahk_exe Falconx64.exe
+    F1::Run, "D:\OneDrive\Accessories\REAPER Iapetus\Guide.pdf"
+Return
 
-                                                        #IfWinActive, iLok License Manager
-                                                            F1::Run, "https://s3.amazonaws.com/ilok-com/iLokLicenseManagerManual.pdf#page=2"
-                                                        F12::
-                                                            Send !h
-                                                            Send {Down}
-                                                            Send {Enter}
-                                                        Return
+#IfWinActive, Postman
+F1::
+    Send ^l
+    Send ^a
+    Send https://localhost:8000/ 
+Return
+F2::
+    Send ^l
+    Send ^a
+    Send https://localhost:8080/ 
+Return
+F3::
+    Send ^l
+    Send ^a
+    Send https://www.ampparit.com/ 
+Return
+F4::
+    Send ^l
+    Send ^a
+    Send https://www.thurrott.com/ 
+Return
+Return
 
-                                                        #IfWinActive, ahk_exe peazip.exe
-                                                        F12::
-                                                            Send !h
-                                                            Send {Enter}
-                                                        Return
+#IfWinActive, iLok License Manager
+    F1::Run, "https://s3.amazonaws.com/ilok-com/iLokLicenseManagerManual.pdf#page=2"
+F12::
+    Send !h
+    Send {Down}
+    Send {Enter}
+Return
+Return
 
-                                                        #IfWinActive, Minecraft 1.*
-                                                            ; https://minecraft.fandom.com/wiki/Commands
-                                                            ; Send /weather clear|rain|thunder
-                                                        !F1::
-                                                            Send t
-                                                            Sleep 100
-                                                            Send /time set day
-                                                            Send {Enter}
-                                                        Return
-                                                        !F2::
-                                                            Send t
-                                                            Sleep 100
-                                                            Send /time set night
-                                                            Send {Enter}
-                                                        Return
-                                                        !F3::
-                                                            Send t
-                                                            Sleep 100
-                                                            ; Send /time set noon
-                                                            Send /weather clear
-                                                            Send {Enter}
-                                                        Return
-                                                        !F4::
-                                                            Send t
-                                                            Sleep 100
-                                                            ; Send /time set midnight
-                                                            Send /weather thunder
-                                                            Send {Enter}
-                                                        Return
+#IfWinActive, ahk_exe peazip.exe
+F12::
+    Send !h
+    Send {Enter}
+Return
+Return
 
-                                                        #IfWinActive, BallisticNG
-                                                        !F1::
-                                                            Send {Left}
-                                                            Sleep 250
-                                                            Send {Left}
-                                                            Sleep 250
-                                                            Send {Up}
-                                                            Sleep 250
-                                                            Send {Up}
-                                                            Sleep 250
-                                                            Send {Enter}
-                                                            Sleep 250
-                                                            Send {Right}
-                                                            Sleep 250
-                                                            Send {Up}
-                                                            Sleep 250
-                                                            Send {Up}
-                                                            Sleep 250
-                                                            Send {Enter}
-                                                            Sleep 250
-                                                            Send {Esc}
-                                                            Sleep 250
-                                                            Send {Right}
-                                                            Sleep 250
-                                                            Send {Right}
-                                                            Sleep 250
-                                                            Send {Down}
-                                                            Sleep 250
-                                                            Send {Down}
-                                                            Sleep 250
-                                                            Send {Enter}
-                                                            Sleep 250
-                                                            Send {Enter}
-                                                            Sleep 250
-                                                            Send {Enter}
-                                                        Return
+#IfWinActive, Minecraft 1.*
+    ; https://minecraft.fandom.com/wiki/Commands
+    ; Send /weather clear|rain|thunder
+!F1::
+    Send t
+    Sleep 100
+    Send /time set day
+    Send {Enter}
+Return
+!F2::
+    Send t
+    Sleep 100
+    Send /time set night
+    Send {Enter}
+Return
+!F3::
+    Send t
+    Sleep 100
+    ; Send /time set noon
+    Send /weather clear
+    Send {Enter}
+Return
+!F4::
+    Send t
+    Sleep 100
+    ; Send /time set midnight
+    Send /weather thunder
+    Send {Enter}
+Return
+Return
 
-#IfWinActive
+#IfWinActive, BallisticNG
+    ; Guess what this does
+!F1::
+    Send {Left}
+    Sleep 250
+    Send {Left}
+    Sleep 250
+    Send {Up}
+    Sleep 250
+    Send {Up}
+    Sleep 250
+    Send {Enter}
+    Sleep 250
+    Send {Right}
+    Sleep 250
+    Send {Up}
+    Sleep 250
+    Send {Up}
+    Sleep 250
+    Send {Enter}
+    Sleep 250
+    Send {Esc}
+    Sleep 250
+    Send {Right}
+    Sleep 250
+    Send {Right}
+    Sleep 250
+    Send {Down}
+    Sleep 250
+    Send {Down}
+    Sleep 250
+    Send {Enter}
+    Sleep 250
+    Send {Enter}
+    Sleep 250
+    Send {Enter}
+Return
+Return
+
+; #IfWinActive
 
 ; =============================================================================
 ; NUMBER PAD
