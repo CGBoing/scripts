@@ -1,69 +1,33 @@
 ; https://www.autohotkey.com/docs/KeyList.htm
-
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
 SetTitleMatchMode, RegEx
 ; #Warn  			; Debug messages
-
-EnvGet, COMPNAME, COMPUTERNAME
+EnvGet, COMPUTER, COMPUTERNAME
 EnvGet, USER, USERNAME
+Init()
 
-; =============================================================================
-; VARIABLES
-; =============================================================================
+TESTFILES := []
+Loop Files, % START_MENU_USER . "Steam\*.*"
+{
+    if (A_LoopFileName != "Steam") {
+        TESTFILES.Push(A_LoopFilePath)
+    }
+}
+
 ; https://duckduckgo.com/bang
 DUCKDUCKGO_BANGS := ["yt", "gm", "dis", "amg", "w", "rw", "tw", "gt", "forvo"]
 DUCKDUCKGO_BANGS[10] := "i"
-
-TERMINAL_CMD_INTERVAL = 500
-FALCON_PROGRAM := "Acoustic Grand Piano"
-VIRTUAL_MACHINE := "Arch"
-POSTMAN_ADDRESSES := [""
-, "localhost:8000"
-, "localhost:8080"
-, "www.ampparit.com"
-, "www.thurrott.com"
-, ""]
-
-ONEDRIVE := "D:\OneDrive\"
-ONEDRIVE_UEF := "D:\OneDrive - University of Eastern Finland\"
-CREATIVE_CLOUD := "D:\Creative Cloud Files\"
-ACCESSORIES := ONEDRIVE . "Accessories\"
-LOCAL_MUSIC := "D:\OneDrive\Music\Audio\"
-STEAM := "C:\Program Files (x86)\Steam\steam.exe"
-ROAMING := "C:\Users\" . USER . "\AppData\Roaming\"
-START_MENU_USER := ROAMING . "Microsoft\Windows\Start Menu\Programs\"
-START_MENU := "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\"
+ALT_BROWSER := START_MENU . "Microsoft Edge.lnk """
 
 ; =============================================================================
 ; TEMPORARY SHORTCUTS (WIPs, learning, evaluation)
 ; =============================================================================
-
-!#F1::Run
-, % ONEDRIVE_UEF . "Publications - Research Group\Kashyap 2021\Illustrations\"
-!#F2::Run
-, % ""
-!#F3::Run
-, % ""
-!#F4::Run
-, % ""
-!#F5::Run
-, % START_MENU_USER . "Obsidian.lnk"
-!#F6::Run
-, % ""
-!#F7::Run
-, % ""
-!#F8::Run
-, % STEAM . " -applaunch 383870" ; Firewatch
-!#F9::Run
-, % STEAM . " -applaunch 280" ; Half-Life
-!#F10::Run
-, % STEAM . " -applaunch 220" ; Half-Life 2
-!#F11::Run
-, % ""
-!#F12::Run
-, % STEAM . " -applaunch 420" ; Half-Life 2 Episode 2
+!#F1:: ; Launch random game
+    Random, rnd, 1, TESTFILES.Count()
+    Run, % TESTFILES[rnd]
+Return
 
 ; =============================================================================
 ; EXPANSIONS
@@ -123,12 +87,6 @@ Return
 +!#F2::Run, % START_MENU . "Allegorithmic\Adobe Substance 3D Painter\Adobe Substance 3D Painter.lnk"
 +^!#F2::Run, % START_MENU . "World Machine\World Machine Basic.lnk"
 
-+^#F4::Run, % START_MENU_USER . "Postman\Postman.lnk"
-; ^!#F4::
-; Run, cmd.exe /c cd /d "D:\OneDrive\React\react-test\" && npm start,,
-; Run, cmd.exe /c code "D:\OneDrive\React\react-test\",, hide
-; Return
-
 #F5::Run, % START_MENU . "Visual Studio 2019.lnk"
 +#F5::Run, % START_MENU . "Visual Studio Installer.lnk"
 +^#F5::Run, % START_MENU . "Word.lnk"
@@ -138,12 +96,19 @@ Return
 
 #F6::Run, % ACCESSORIES . "RapidComposer\RapidComposer Template.rcCOMP"
 +#F6::Run, % ACCESSORIES . "REAPER\REAPER.bat"
-+^#F6::Run, % ACCESSORIES . "Steinberg\Project Templates\Jopi.cpr"
++^#F6::
+    if (COMPUTER = "SATURN") {
+        Run, % ACCESSORIES . "Steinberg\Project Templates\Jopi.cpr"
+    } else {
+        Run, "https://steinberg.help/cubase_pro/v11/en/cubase_nuendo/topics/chord_pads/chord_pad_zone_r.html"
+    }
+Return
++!#F6::Run, % START_MENU . "Adobe Audition 2021.lnk"
 ^!#F6::Run, % START_MENU . "Renoise 3.3.2 (x64)\Renoise 3.3.2 (x64).lnk"
 +^!#F6::Run, % START_MENU_USER . "Image-Line\FL Studio 20.lnk"
 
 #F7::
-    if (COMPNAME = "IAPETUS") {
+    if (COMPUTER = "IAPETUS") {
         Process, Exist, loopBeMon.exe
         monitorPID := ErrorLevel
         Process, Exist, XotoPad.exe
@@ -165,45 +130,12 @@ Return
         }
     }
 Return
-+^#F7::Run, % START_MENU . "Adobe Audition 2021.lnk"
-+!#F7::Run, % ONEDRIVE . "Music\Falcon\" . FALCON_PROGRAM . ".uvip"
-; , % ACCESSORIES . "TouchOSC\TouchOSCEditor.exe"
-; , % ACCESSORIES . "REAPER\MTexturedStyleEditor\MTexturedStyleEditor.exe"
-+^!#F7::Run, % START_MENU . "iLok License Manager.lnk"
++#F7::Run, % ONEDRIVE . "Music\Falcon\Init.uvip"
 
 #F8::Run, % START_MENU . "Adobe Lightroom.lnk"
-+#F8::Run, % ACCESSORIES . "Foobar2000\foobar2000.exe"
-+^!#F8::Run, fireface
 
-#F9::Run, % START_MENU . "Steam\Steam.lnk"
-; +#F9::Run
-; , % STEAM . " -applaunch 108710" ; Alan Wake
-; , % STEAM . " -applaunch 244210" ; Assetto Corsa
-; , % STEAM . " -applaunch 870780" ; Control
-; , % START_MENU . "Trend\EEP 14.0\EEP 14.0 (Petrol Design).lnk"
-; , % STEAM . " -applaunch 383870" ; Firewatch
-; , % STEAM . " -applaunch 2990" ; FlatOut 2
-; , % STEAM . " -applaunch 280" ; Half-Life
-; , % STEAM . " -applaunch 220" ; Half-Life 2
-; , % STEAM . " -applaunch 380" ; Half-Life 2 Episode 1
-; , % STEAM . " -applaunch 420" ; Half-Life 2 Episode 2
-; , % STEAM . " -applaunch 976730" ; Halo
-; , % STEAM . " -applaunch 12140" ; Max Payne
-; , % STEAM . " -applaunch 12150" ; Max Payne 2
-; , % START_MENU . "Minecraft Launcher\Minecraft Launcher.lnk"
-; , % STEAM . " -applaunch 17410" ; Mirror's Edge
-; , % STEAM . " -applaunch 620" ; Portal 2
-; , % STEAM . " -applaunch 474960" ; Quantum Break
-; , % STEAM . " -applaunch 1282590" ; Train Sim World 2
-; , % STEAM . " -applaunch 269950" ; X-Plane
-+^#F9::Run
-, % STEAM . " -applaunch 473770" ; BallisticNG
-+!#F9::Run
-, "D:\SteamLibrary\steamapps\common\Quake\quakespasm.lnk" +map e1m5
-^!#F9::Run
-, % STEAM . " -applaunch 284160" ; BeamNG
-+^!#F9::Run
-, % START_MENU_USER . "Live for Speed\LFS.lnk" ; Live for Speed
+#F9::Run, % START_MENU_USER . "Steam\Steam.lnk"
++#F9::Run, % ALT_BROWSER . "www.retrogames.cc/user/favorite-game.html"
 
 #F10::Run, % ONEDRIVE . "Documents\Budget.xlsx"
 +#F10::Run, % START_MENU_USER . "Microsoft Teams.lnk"
@@ -213,39 +145,21 @@ Return
 
 #F11::Run, colorcpl.exe
 +#F11::
-    if (COMPNAME = "SATURN") {
+    if (COMPUTER = "SATURN") {
         Run, % ACCESSORIES . "BackupToW.bat"
     }
 Return
-; +^#F11::Run, % START_MENU . "VMware\VMware Workstation 16 Player.lnk -X ""C:\Users\" . USER . "\Documents\Virtual Machines\" . VIRTUAL_MACHINE . "\" . VIRTUAL_MACHINE . ".vmx"""
-+!#F11::Run, % ACCESSORIES . "PeaZip\peazip.exe"
-+^!#F11::Run, % START_MENU . "Microsoft Edge.lnk www.retrogames.cc/user/favorite-game.html"
 
-; +^#Up::Send {AppsKey}
 +^#Down::Send {Media_Play_Pause}
 +^#Left::Send {Media_Prev}
 +^#Right::Send {Media_Next}
 
-ShutDownDialog() {
-    MsgBox, 0x202, Power, What to do with uptime? ; 0 = OK, 1 = OK/Cancel, 3 = Yes/No/Cancel
-    IfMsgBox Abort
-    Run, shutdown /s /t 0
-    else IfMsgBox Retry
-        Run, shutdown /r /t 0
-Return
-}
-
 #F12::ShutDownDialog()
-+#F12::Run, cmd.exe /c code "D:\OneDrive\Accessories\JopiMap.ahk",, hide
++#F12::Run, % CODE . A_ScriptFullPath
 
 ; =============================================================================
 ; PROGRAM-SPECIFIC SHORTCUTS
 ; =============================================================================
-DuckDuckGoSearch(entry) {
-    entry := % "{!}" . entry . " "
-    EnterCommand(entry, "^l", False, False, False)
-}
-
 #IfWinActive, ahk_exe msedge.exe
     !1::+!b 		; Focus Bookmarks bar
     !2::Send {F6}
@@ -254,16 +168,6 @@ DuckDuckGoSearch(entry) {
     Sleep 50
     Send e
 Return
-F1::DuckDuckGoSearch(DUCKDUCKGO_BANGS[1])
-F2::DuckDuckGoSearch(DUCKDUCKGO_BANGS[2])
-F3::DuckDuckGoSearch(DUCKDUCKGO_BANGS[3])
-F4::DuckDuckGoSearch(DUCKDUCKGO_BANGS[4])
-F5::DuckDuckGoSearch(DUCKDUCKGO_BANGS[5])
-F6::DuckDuckGoSearch(DUCKDUCKGO_BANGS[6])
-F7::DuckDuckGoSearch(DUCKDUCKGO_BANGS[7])
-F8::DuckDuckGoSearch(DUCKDUCKGO_BANGS[8])
-F9::DuckDuckGoSearch(DUCKDUCKGO_BANGS[9])
-F10::DuckDuckGoSearch(DUCKDUCKGO_BANGS[10])
 Return
 
 #IfWinActive, ahk_exe vivaldi.exe
@@ -301,21 +205,6 @@ Return
     F11::Send !{F4}
 Return
 
-TerminalPanes(main_entry = "", ur_entry = "", lr_entry = "", interval = 500) {
-    Sleep %interval%
-    Send ^d
-    Sleep %interval%
-    if (ur_entry != "")
-        Send %ur_entry%{Enter}
-    Send +^d
-    Sleep %interval%
-    if (lr_entry != "")
-        Send %lr_entry%{Enter}
-    Send +!{right}
-    Send !{left}
-    if (main_entry != "") 
-        Send %main_entry%{Enter}
-}
 #IfWinActive, .*Jopi's PowerShell.*
     #'::Send !{Space}n
     F1::TerminalPanes("", "rr", "cal")
@@ -398,50 +287,47 @@ Return
     ^1::Send !{F8}
 Return
 
-PostmanAddress(entry, exec = False) {
-    entry := % "https://" . entry . "/"
-    if (exec) {
-        interval = 500
-    } else {
-        interval = 50
-    }
-    EnterCommand(entry, "^l", False, True, exec, interval)
-    ; Send ^l
-    ; Send ^a
-    ; Send https://%entry%/
-    ; if (exec)
-    ;     Send {Enter}
-}
-#IfWinActive, Postman
-    F1::PostmanAddress(POSTMAN_ADDRESSES[2])
-    !F1::PostmanAddress(POSTMAN_ADDRESSES[2], True)
-    F2::PostmanAddress(POSTMAN_ADDRESSES[3])
-    !F2::PostmanAddress(POSTMAN_ADDRESSES[3], True)
-    F3::PostmanAddress(POSTMAN_ADDRESSES[4])
-    !F3::PostmanAddress(POSTMAN_ADDRESSES[4], True)
-    F4::PostmanAddress(POSTMAN_ADDRESSES[5])
-    !F4::PostmanAddress(POSTMAN_ADDRESSES[5], True)
-Return
-
-#IfWinActive, iLok License Manager
-    F1::Run, "https://s3.amazonaws.com/ilok-com/iLokLicenseManagerManual.pdf#page=2"
-F12::
-    Send !h
-    Send {Down}
-    Send {Enter}
-Return
-Return
-
-#IfWinActive, ahk_exe peazip.exe
-F12::
-    Send !h
-    Send {Enter}
-Return
+#IfWinActive, ahk_exe wsl.exe
+    ^q::Send {U+003A}q{Enter}
 Return
 
 ; ============================================================================
 ; GAMES
 ; ============================================================================
+#IfWinActive, Minecraft 1.*
+    ; https://minecraft.fandom.com/wiki/Commands
+    !F1::EnterCommand("/time set day", "t")
+    !F2::EnterCommand("/time set night", "t")
+    !F3::EnterCommand("/weather clear", "t")
+    !F4::EnterCommand("/weather thunder", "t")
+Return
+
+#IfWinActive, ahk_exe hl2.exe
+    ^q::Send {Delete}
+Return
+
+#IfWinActive, BallisticNG
+!F1::
+    BALLISTICNG_MENU_SEQUENCE := ["{Left}","{Left}","{Up}","{Up}","{Enter}","{Right}","{Up}","{Up}","{Enter}","{Esc}","{Right}","{Right}","{Down}","{Down}","{Enter}","{Enter}","{Enter}"]
+    For i, key in BALLISTICNG_MENU_SEQUENCE {
+        Send % key
+        Sleep 250
+    }
+Return
+Return
+
+; ============================================================================
+; FUNCTIONS
+; ============================================================================
+ShutDownDialog() {
+    MsgBox, 0x202, Power, % GetOutput("cat " A_ScriptFullPath " | Select-String '^!#F'") "What to do with uptime?"
+    IfMsgBox Abort
+    Run, shutdown /s /t 0
+    else IfMsgBox Retry
+        Run, shutdown /r /t 0
+Return
+}
+
 EnterCommand(entry, invoke_key, escape = True, select = False, enter = True, interval = 50) {
     Send %invoke_key%
     if (select)
@@ -458,91 +344,44 @@ EnterCommand(entry, invoke_key, escape = True, select = False, enter = True, int
     }
 }
 
-#IfWinActive, Minecraft 1.*
-    ; https://minecraft.fandom.com/wiki/Commands
-    !F1::EnterCommand("/time set day", "t")
-    !F2::EnterCommand("/time set night", "t")
-    !F3::EnterCommand("/weather clear", "t")
-    !F4::EnterCommand("/weather thunder", "t")
-Return
+DuckDuckGoSearch(entry) {
+    entry := % "{!}" . entry . " "
+    EnterCommand(entry, "^l", False, False, False)
+}
 
-#IfWinActive, ahk_exe hl2.exe
-    ^q::Send {Delete}
-    ; https://gamefaqs.gamespot.com/pc/914642-half-life-2/cheats
-    F1::EnterCommand("noclip", "{Esc}")
-    F2::EnterCommand("impulse 101", "{Esc}")
-    F3::EnterCommand("god", "{Esc}")
-    F5::EnterCommand("host_timescale 0.5", "{Esc}")
-    F6::EnterCommand("host_timescale 1", "{Esc}")
-    F7::EnterCommand("host_timescale 1.5", "{Esc}")
-    F8::EnterCommand("host_timescale 2", "{Esc}")
-    ; https://wiki.sourceruns.org/wiki/Half-Life_Maps
-    ::blastpit::map c1a4
-    ::rocket::map c2a2h
-    ::questionableethics::map c2a4d
-    ::surfacetension::map c2a5
-    ::xen::map c4a1
-    ; https://developer.valvesoftware.com/wiki/Half-Life_2_map_reference
-    ::manhacks::map d1_canals_03
-    ::airboat::map d1_canals_06
-    ::helicopter::map d1_canals_13
-    ::town::map d1_town_01
-    ::townexit::map d1_town_05
-    ::bridge::map d2_coast_07
-    ::lighthouse::map d2_coast_10
-    ::prison::map d2_prison_02
-    ::teleport::map d2_prison_08
-    ::anticitizen::map d3_c17_02
-    ::warehouse::map d3_c17_08
-    ::striders::map d3_c17_12b
-    ::citadel::map d3_citadel_01
-    ; https://steamcommunity.com/sharedfiles/filedetails/?id=1330337329
-    ::reactor::map ep1_citadel_03
-    ::urbanflight::map ep1_c17_01
-    ::exit17::map ep1_c17_05
-    ; https://wiki.sourceruns.org/wiki/Half-Life_2:_Episode_Two_Maps
-    ::pontifex::map ep2_outland_05
-    ::riding::map ep2_outland_06a
-    ::helibombs::map ep2_outland_08
-    ::valleybattle::map ep2_outland_12
-Return
+TerminalPanes(main_entry = "", ur_entry = "", lr_entry = "", interval = 500) {
+    Sleep %interval%
+    Send ^d
+    Sleep %interval%
+    if (ur_entry != "")
+        Send %ur_entry%{Enter}
+    Send +^d
+    Sleep %interval%
+    if (lr_entry != "")
+        Send %lr_entry%{Enter}
+    Send +!{right}
+    Send !{left}
+    if (main_entry != "") 
+        Send %main_entry%{Enter}
+}
 
-#IfWinActive, ahk_exe quakespasm.exe
-    ; https://quake.fandom.com/wiki/Console_Commands_(Q1)
-    F1::EnterCommand("noclip", "§")
-    F2::EnterCommand("impulse 9", "§")
-    F3::EnterCommand("impulse 255", "§")
-    F12::EnterCommand("map ", "§", False, False, False)
-Return
+GetOutput(command) {
+    shell := ComObjCreate("WScript.Shell")
+    exec := shell.Exec(ComSpec " /C " command)
+    exec := shell.Exec("powershell " command)
+return exec.StdOut.ReadAll()
+}
 
-#IfWinActive, BallisticNG
-!F1::
-    BALLISTICNG_MENU_SEQUENCE := ["{Left}","{Left}","{Up}","{Up}","{Enter}","{Right}","{Up}","{Up}","{Enter}","{Esc}","{Right}","{Right}","{Down}","{Down}","{Enter}","{Enter}","{Enter}"]
-    For i, key in BALLISTICNG_MENU_SEQUENCE {
-        Send % key
-        Sleep 200
-    }
-Return
-Return
-
-#IfWinActive, ahk_exe maxpayne.exe
-    ; https://steamcommunity.com/sharedfiles/filedetails/?id=2022465230
-F1::
-    Loop, 30
-        Send {Home}
-    Sleep 10
-Return
-F2::
-    Loop, 30
-        Send {End}
-    Sleep 10
-Return
-; http://legacy.3drealms.com/max/walkthrough/p1c1.html
-; https://maxpayne.fandom.com/wiki/Max_Payne_(Game)#Chapters
-:*SEk1:hotel::maxpay`t->gm_in`tpart1_level2
-:*SEk1:docks::maxpay`t->gm_in`tpart2_level2
-:*SEk1:foundry::maxpay`t->gm_in`tpart3_level2
-:*SEk1:parking::maxpay`t->gm_in`tpart3_level4
-:*SEk1:manor::maxpay`t->gm_in`tpart3_level5
-:*SEk1:aesir::maxpay`t->gm_in`tpart3_level6
-Return
+; Init(user) {
+Init() {
+    global
+    ROAMING := "C:\Users\" . USER . "\AppData\Roaming\"
+    START_MENU_USER := ROAMING . "Microsoft\Windows\Start Menu\Programs\"
+    START_MENU := "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\"
+    ONEDRIVE := "D:\OneDrive\"
+    ACCESSORIES := ONEDRIVE . "Accessories\"
+    ONEDRIVE_UEF := "D:\OneDrive - University of Eastern Finland\"
+    RESEARCH_GROUP := ONEDRIVE_UEF . "Publications - Research Group\"
+    CREATIVE_CLOUD := "D:\Creative Cloud Files\"
+    CODE := START_MENU_USER . "Visual Studio Code\Visual Studio Code.lnk """
+}
